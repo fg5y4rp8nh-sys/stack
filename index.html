@@ -10,6 +10,24 @@
 
   gtag('config', 'AW-18545094356');
 </script>
+<!-- Event snippet for Покупка conversion page -->
+<script>
+function gtag_report_conversion(url) {
+  var callback = function () {
+    if (typeof(url) != 'undefined') {
+      window.location = url;
+    }
+  };
+  gtag('event', 'conversion', {
+      'send_to': 'AW-18545094356/QJBHCP2LyK4dENTd_opF',
+      'value': 1.0,
+      'currency': 'VND',
+      'transaction_id': '',
+      'event_callback': callback
+  });
+  return false;
+}
+</script>
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -182,9 +200,9 @@ footer{display:flex;justify-content:space-between;gap:16px;padding:32px 0 40px;c
       <h1>Graphic Designer<br>&amp; Web Developer</h1>
       <div class="hero-foot">
         <div class="btns">
-          <a class="btn btn-up" href="https://www.upwork.com/freelancers/alekseib29?mp_source=share" target="_blank" rel="noopener">Upwork</a>
-          <a class="btn btn-fv" href="https://www.fiverr.com/s/611mjbX" target="_blank" rel="noopener">Fiverr</a>
-          <a class="btn btn-line" href="https://t.me/productsl" target="_blank" rel="noopener">Telegram</a>
+          <a class="btn btn-up" href="https://www.upwork.com/freelancers/alekseib29?mp_source=share" target="_blank" rel="noopener" onclick="gtag_report_conversion()">Upwork</a>
+          <a class="btn btn-fv" href="https://www.fiverr.com/s/611mjbX" target="_blank" rel="noopener" onclick="gtag_report_conversion()">Fiverr</a>
+          <a class="btn btn-line" href="https://t.me/productsl" target="_blank" rel="noopener" onclick="gtag_report_conversion()">Telegram</a>
         </div>
         <span class="status"><i class="dot"></i>Available for new projects</span>
       </div>
@@ -252,9 +270,9 @@ footer{display:flex;justify-content:space-between;gap:16px;padding:32px 0 40px;c
         <p>Hire me through Upwork or Fiverr for a safe deal: your payment is protected and the terms are clear from the start.</p>
       </div>
       <div class="safe">
-        <a class="btn btn-dark" href="https://www.upwork.com/freelancers/alekseib29?mp_source=share" target="_blank" rel="noopener">Hire on Upwork</a>
-        <a class="btn btn-line" href="https://www.fiverr.com/s/611mjbX" target="_blank" rel="noopener">Order on Fiverr</a>
-        <small>Have a quick question first? <a href="https://t.me/productsl" target="_blank" rel="noopener" style="color:var(--dark-ink);text-decoration:underline;text-underline-offset:3px">Message me on Telegram</a></small>
+        <a class="btn btn-dark" href="https://www.upwork.com/freelancers/alekseib29?mp_source=share" target="_blank" rel="noopener" onclick="gtag_report_conversion()">Hire on Upwork</a>
+        <a class="btn btn-line" href="https://www.fiverr.com/s/611mjbX" target="_blank" rel="noopener" onclick="gtag_report_conversion()">Order on Fiverr</a>
+        <small>Have a quick question first? <a href="https://t.me/productsl" target="_blank" rel="noopener" style="color:var(--dark-ink);text-decoration:underline;text-underline-offset:3px" onclick="gtag_report_conversion()">Message me on Telegram</a></small>
       </div>
     </div>
 
