@@ -6,8 +6,8 @@ const cut = (s, n) => String(s || '').trim().slice(0, n);
 module.exports = async (req, res) => {
   if (req.method === 'GET') return res.status(200).json({ ok: true, status: 'lead function is running' });
   if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'method not allowed' });
-  const token = process.env.TELEGRAM_BOT_TOKEN || '8909736930:AAFvJG67DMzqZE9YMqB_RsPpwsh_e_x3K4g';
-  const chat = process.env.TELEGRAM_CHAT_ID || '1749885024';
+  const token = process.env.TELEGRAM_BOT_TOKEN || '9026958834:AAFK4iw4BDaSL1vS-cMhRVtFapjUx0YSMfY';
+  const chat = process.env.TELEGRAM_CHAT_ID || '5448288818';
   if (!token || !chat) return res.status(500).json({ ok: false, error: 'not configured' });
 
   let b = req.body || {};
