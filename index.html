@@ -412,9 +412,9 @@ var I18N={"en":{"ns":"Services","na":"About","nc":"Contact","h1a":"Full-Stack","
     if(!d.name||!d.contact||!d.message){m.className='f-msg err';m.textContent=tr('m_fill');return}
     sb.disabled=true;sb.textContent=tr('m_sending');
     fetch('/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)})
-      .then(function(r){if(!r.ok)throw 0;return r.json()})
+      .then(function(r){return r.json().catch(function(){return {}}).then(function(j){if(!r.ok||!j.ok)throw (j.error||('HTTP '+r.status));return j})})
       .then(function(){f.reset();var hl=document.querySelector('input[name=lang]');if(hl)hl.value=cur;m.className='f-msg ok';m.textContent=tr('m_ok');try{gtag_report_conversion()}catch(x){}})
-      .catch(function(){m.className='f-msg err';m.textContent=tr('m_err')})
+      .catch(function(er){m.className='f-msg err';m.textContent=tr('m_err')+(er?' ('+er+')':'');try{console.error('lead form',er)}catch(x){}})
       .then(function(){sb.disabled=false;sb.textContent=tr('fs')});
   });
 

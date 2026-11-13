@@ -4,7 +4,8 @@ const esc = (s) => String(s || '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<'
 const cut = (s, n) => String(s || '').trim().slice(0, n);
 
 module.exports = async (req, res) => {
-  if (req.method !== 'POST') return res.status(405).json({ ok: false });
+  if (req.method === 'GET') return res.status(200).json({ ok: true, status: 'lead function is running' });
+  if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'method not allowed' });
   const token = process.env.TELEGRAM_BOT_TOKEN || '8909736930:AAFvJG67DMzqZE9YMqB_RsPpwsh_e_x3K4g';
   const chat = process.env.TELEGRAM_CHAT_ID || '1749885024';
   if (!token || !chat) return res.status(500).json({ ok: false, error: 'not configured' });
@@ -14,7 +15,7 @@ module.exports = async (req, res) => {
   if (b.website) return res.status(200).json({ ok: true }); // honeypot: silently drop bots
 
   const name = cut(b.name, 80), contact = cut(b.contact, 120), message = cut(b.message, 2000);
-  if (!name || !contact || !message) return res.status(400).json({ ok: false });
+  if (!name || !contact || !message) return res.status(400).json({ ok: false, error: 'missing fields' });
 
   const text =
     '<b>New request from the website</b>\n\n' +
@@ -31,9 +32,14 @@ module.exports = async (req, res) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: chat, text, parse_mode: 'HTML', disable_web_page_preview: true }),
     });
-    if (!r.ok) return res.status(502).json({ ok: false });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok || !data.ok) {
+      console.error('Telegram error', r.status, data);
+      return res.status(502).json({ ok: false, error: 'Telegram: ' + (data.description || r.status) });
+    }
     return res.status(200).json({ ok: true });
   } catch (e) {
-    return res.status(502).json({ ok: false });
+    console.error('Telegram request failed', e);
+    return res.status(502).json({ ok: false, error: 'Telegram request failed: ' + (e && e.message) });
   }
 };
