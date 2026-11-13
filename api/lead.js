@@ -26,20 +26,33 @@ module.exports = async (req, res) => {
     `<b>Site language:</b> ${esc(cut(b.lang, 5))}\n\n` +
     esc(message);
 
-  try {
-    const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chat, text, parse_mode: 'HTML', disable_web_page_preview: true }),
-    });
-    const data = await r.json().catch(() => ({}));
-    if (!r.ok || !data.ok) {
-      console.error('Telegram error', r.status, data);
-      return res.status(502).json({ ok: false, error: 'Telegram: ' + (data.description || r.status) });
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+  const payload = { chat_id: chat, text, parse_mode: 'HTML', disable_web_page_preview: true };
+  let last = 'unknown error';
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 5000);
+    try {
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: ctrl.signal,
+      });
+      clearTimeout(timer);
+      const data = await r.json().catch(() => ({}));
+      if (r.ok && data.ok) return res.status(200).json({ ok: true });
+      last = `${r.status} ${data.description || r.statusText || ''}`.trim();
+      console.error('Telegram error, attempt', attempt, last, data);
+      if (r.status >= 400 && r.status < 500 && r.status !== 429) break; // wrong token / chat: retrying won't help
+    } catch (e) {
+      clearTimeout(timer);
+      last = e && e.name === 'AbortError' ? 'timeout' : (e && e.message) || 'request failed';
+      console.error('Telegram request failed, attempt', attempt, last);
     }
-    return res.status(200).json({ ok: true });
-  } catch (e) {
-    console.error('Telegram request failed', e);
-    return res.status(502).json({ ok: false, error: 'Telegram request failed: ' + (e && e.message) });
+    await new Promise((ok) => setTimeout(ok, 600 * attempt));
   }
+  return res.status(502).json({ ok: false, error: 'Telegram: ' + last });
 };
+
+module.exports.config = { maxDuration: 30 };
